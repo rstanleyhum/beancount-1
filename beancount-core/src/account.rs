@@ -1,6 +1,8 @@
+use AccountBuilder_core::borrow::Borrow;
 use typed_builder::TypedBuilder;
 
-use std::borrow::Cow;
+use std::{borrow::Cow, fmt::Display};
+use std::fmt;
 
 use super::account_types::AccountType;
 
@@ -28,4 +30,14 @@ pub struct Account<'a> {
 
     /// Optional parts of the account following the account type.
     pub parts: Vec<Cow<'a, str>>,
+}
+
+impl Display for Account<'_> {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}", self.ty.default_name())?;
+        for p in self.parts.iter() {
+            write!(f, "::{}", p.to_string())?;
+        }
+        Ok(())
+    }
 }

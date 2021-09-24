@@ -37,6 +37,20 @@ pub struct IncompleteAmount<'a> {
     pub currency: Option<Currency<'a>>,
 }
 
+impl std::fmt::Display for IncompleteAmount<'_> {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        match &self.num {
+            Some(d) => write!(f, "{:.2}", &d)?,
+            None => {}
+        };
+        match &self.currency {
+            Some(c) => write!(f, " {}", c.to_string())?,
+            None => {}
+        };
+        Ok(())
+    }
+}
+
 impl cmp::PartialOrd for IncompleteAmount<'_> {
     fn partial_cmp(&self, other: &IncompleteAmount<'_>) -> Option<cmp::Ordering> {
         if self.currency == other.currency {

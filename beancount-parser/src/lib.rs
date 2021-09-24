@@ -221,6 +221,7 @@ fn directive<'i>(directive: Pair<'i, Rule>, state: &ParseState) -> ParseResult<b
         Rule::document => document_directive(directive, state)?,
         Rule::price => price_directive(directive, state)?,
         Rule::transaction => transaction_directive(directive, state)?,
+        Rule::balance => balance_directive(directive, state)?,
         _ => bc::Directive::Unsupported,
     };
     Ok(dir)
@@ -275,6 +276,22 @@ fn include_directive<'i>(directive: Pair<'i, Rule>) -> ParseResult<bc::Directive
     Ok(bc::Directive::Include(construct! {
         bc::Include: directive => {
             filename = get_quoted_str;
+            source := Some(source);
+        }
+    }))
+}
+
+fn balance_directive<'i>(
+    directive: Pair<'i, Rule>,
+    state: &ParseState,
+) -> ParseResult<bc::Directive<'i>> {
+    let source = directive.as_str();
+    Ok(bc::Directive::Balance(construct! {
+        bc::Balance: directive => {
+            date = date;
+            account = |p| account(p, state);
+            amount = amount;
+            meta = |p| meta_kv(p, state);
             source := Some(source);
         }
     }))
